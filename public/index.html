@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Server UI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #F5EFFF;
+      color: #4B4B4B;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #E5D9F2;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 500px;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #A594F9;
+    }
+    .btn {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 30px;
+    }
+    .btn-primary {
+      background-color: #A594F9;
+      border-color: #A594F9;
+      color: #ffffff;
+    }
+    .btn-danger {
+      background-color: #CD81FF;
+      border-color: #CD81FF;
+      color: #ffffff;
+    }
+    #output {
+      background: #CDC1FF;
+      color: #4B4B4B;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      overflow: auto;
+      max-height: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    input[type="text"] {
+      text-align: center;
+      margin-bottom: 10px;
+      background: #FFFFFF;
+      color: #4B4B4B;
+      border: 1px solid #CDC1FF;
+      border-radius: 15px;
+    }
+    input[type="text"]:focus {
+      border-color: #A594F9;
+      outline: none;
+      box-shadow: 0 0 5px #A594F9;
+    }
+    .input-group {
+      justify-content: center;
+    }
+    .input-group .input-group-append {
+      margin-left: 10px;
+    }
+  </style>
+  <script>
+    async function sendCommand() {
+      const command = document.getElementById('commandInput').value;
+      if (!command) return;
+
+      try {
+        const response = await fetch('/command', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ command })
+        });
+        const text = await response.text(); // Ambil sebagai teks biasa, bukan JSON
+        document.getElementById('output').textContent = text;
+      } catch (error) {
+        document.getElementById('output').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    async function resetWorld() {
+      try {
+        const response = await fetch('/reset-world');
+        const result = await response.text();
+        document.getElementById('output').textContent = result;
+      } catch (error) {
+        document.getElementById('output').textContent = `Error: ${error.message}`;
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-cubes"></i> Minecraft Server Control</h1>
+    <div class="input-group mb-3">
+      <input type="text" id="commandInput" class="form-control" placeholder="Enter command...">
+    </div>
+    <button class="btn btn-primary mb-3" onclick="sendCommand()"><i class="fas fa-paper-plane"></i> Send Command</button>
+    <button class="btn btn-danger" onclick="resetWorld()"><i class="fas fa-redo"></i> Reset World</button>
+    <pre id="output" class="text-left"></pre>
+  </div>
+</body>
+</html>
